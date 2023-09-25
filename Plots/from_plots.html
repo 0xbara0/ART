@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+  白い背景に黒点を吹き出させる
+  ドラッグしても同様
+-->
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Generative Art with p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    let points = [];
+
+    function setup() {
+      let canvas = createCanvas(windowWidth, windowHeight);
+      background(255);
+    }
+
+    function draw() {
+      background(255);
+      for (let pt of points) {
+        pt.update();
+        pt.display();
+      }
+
+      for (let i = points.length - 1; i >= 0; i--) {
+        if (points[i].alpha <= 0) {
+          points.splice(i, 1);
+        }
+      }
+    }
+
+    function mousePressed() {
+      generatePoints(mouseX, mouseY, 50);
+    }
+
+    function mouseDragged() {
+      generatePoints(mouseX, mouseY, 10);  // ドラッグ中は一度に生成する点の数を減らす
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+    function generatePoints(x, y, numPoints) {
+      for (let i = 0; i < numPoints; i++) {
+        points.push(new Point(x, y));
+      }
+    }
+
+    class Point {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = random(-5, 5);
+        this.vy = random(-5, 5);
+        this.alpha = 255;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= 2;
+      }
+
+      display() {
+        noStroke();
+        fill(0, this.alpha);
+        ellipse(this.x, this.y, 10);
+      }
+    }
+  </script>
+</body>
+</html>
